@@ -14,7 +14,7 @@ using Formulador.Transversal;
 
 namespace Formulador.Data.Repositorios
 {
-    public class FormulaRepository : BaseReporitory
+    public class FormulaRepository : ServiceContainer
     {
         public async Task<List<Formula>> All(string user)
         {
@@ -45,7 +45,7 @@ namespace Formulador.Data.Repositorios
                                 where F.UsuarioRegistro like '%{user}%'
             ";
 
-            List<Formula> Misformulas = await DAO.QueryToList<Formula>(query);
+            List<Formula> Misformulas = await LocalDAO.QueryToList<Formula>(query);
             return Misformulas;
         }
     }

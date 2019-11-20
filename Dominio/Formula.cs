@@ -54,7 +54,7 @@ namespace Formulador.Dominio
         public string UsuarioActualizacion { get; set; }
         public DateTime FechaActualizacion { get; set; }
         public bool IsRegExpirationPeriod { get; set; }
-        public async Task<List<Detalle>> Details()
+        public async Task<List<Detalle>> Detalles()
         {
             var res = await _DetalleRepository.GetByFormula(this.IdFormula);
             return res;

@@ -9,7 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Formulador.Dominio;
 using Formulador.Negocio;
+using Formulador.Transversal;
 using System.Configuration;
+using System.Data.SQLite;
 
 namespace Formulador
 {
@@ -22,9 +24,9 @@ namespace Formulador
 
         private async void Login_Load(object sender, EventArgs e)
         {
-            //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             var res = await Importador.Import(@"MONTANA\pshiomura");
-            
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

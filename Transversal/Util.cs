@@ -36,7 +36,6 @@ namespace Formulador.Transversal
         {
             T item = new T();
 
-
             foreach (DataColumn column in dataRow.Table.Columns)
             {
                 PropertyInfo property = GetProperty(typeof(T), column.ColumnName);
@@ -50,8 +49,7 @@ namespace Formulador.Transversal
                     catch (Exception ex)
                     {
                         throw ex;
-                    }
-                    
+                    }                    
                 }
             }
 

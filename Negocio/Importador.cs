@@ -15,20 +15,13 @@ namespace Formulador.Negocio
             ImportRepository _importRepository = new ImportRepository();
             try
             {
-                List<Formula> formulas = await _importRepository.FormulasAll(user);
+                List<Formula> formulas = await _importRepository.Formulas(user);
 
-                var f = formulas.Select(x => x.IdFormula.ToString()).ToList();
+                List<Detalle> detalles = await _importRepository.Detalles(user);
 
-                List<string> idClientes = formulas.Select(x => x.IdCliente).ToList()
-                                            .Where(elem => elem != "" && elem != null).ToList()
-                                            .Select(x => $@"'{x}'").ToList();
+                List<Cliente> clientes = await _importRepository.Clientes(user);
 
-
-                var c_joined = String.Join(",", idClientes);
-
-                List<Detalle> detalles = await _importRepository.DetallesPorFormulas(String.Join(",", f));
-
-                List<Cliente> clientes = await _importRepository.ClientesPorFormula(c_joined);
+                await _importRepository.Guardar(clientes);
 
                 return new
                 {
@@ -39,10 +32,10 @@ namespace Formulador.Negocio
             }
             catch (Exception ex)
             {
-
                 throw ex;
             }
 
         }
+
     }
 }

@@ -4,41 +4,117 @@ using System.Text;
 using System.Threading.Tasks;
 using Formulador.Dominio;
 using Formulador.Data.DataAccess;
+using Formulador.Transversal;
 
 namespace Formulador.Data.Repositorios
 {
-    public class ImportRepository : BaseReporitory
+    public class ImportRepository : ServiceContainer
     {
-        public async Task<List<Formula>> FormulasAll(string user)
+        public async Task<List<Formula>> Formulas(string user)
         {
-            string query = $@"SELECT * FROM FORMULACION.formula where UsuarioRegistro like '%{user}%'";
+            try
+            {
+                string query = $@"SELECT * FROM FORMULACION.formula where UsuarioRegistro like '%{user}%'";
 
-            List<Formula> res = await DAO.QueryToList<Formula>(query);
-            return res;
+                List<Formula> res = await RemoteDAO.QueryToList<Formula>(query);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
-        public async Task<List<Detalle>> DetallesPorFormulas(string formula_ids)
+        public async Task<List<Detalle>> Detalles(string user)
         {
-            string query = $@"
-                    Select * 
-                    from FORMULACION.formuladetalle 
-                    where IdFormula in({formula_ids})
-            ";
+            try
+            {
+                string query = $@"
+                        Select * 
+                        from FORMULACION.formuladetalle 
+                        where IdFormula in(
+                            SELECT idFormula 
+                            FROM FORMULACION.formula 
+                            where UsuarioRegistro like '%{user}%'
+                        )
+                ";
 
-            List<Detalle> res = await DAO.QueryToList<Detalle>(query);
+                List<Detalle> res = await RemoteDAO.QueryToList<Detalle>(query);
 
-            return res;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
-        public async Task<List<Cliente>> ClientesPorFormula(string cliente_ids)
+        public async Task<List<Cliente>> Clientes(string user)
         {
-            string query = $@"
-                    Select cliente, nombre 
-                    from EXACTUSDB.SYN_CLIENTE 
-                    where cliente in({cliente_ids})
-            ";
+            try
+            {
+                string query = $@"
+                        Select cliente, nombre 
+                        from EXACTUSDB.SYN_CLIENTE 
+                        where cliente in(
+                            SELECT IdCliente 
+                            FROM FORMULACION.formula 
+                            where UsuarioRegistro like '%{user}%'
+                        )
+                ";
 
-            List<Cliente> res = await DAO.QueryToList<Cliente>(query);
+                List<Cliente> res = await RemoteDAO.QueryToList<Cliente>(query);
 
-            return res;
+                return res;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
+        public async Task Guardar(List<Cliente> clientes)
+        {
+            try
+            {
+                var n = await LocalDAO.Query($@"delete from CLIENTE");
+
+                //List<string> queries = new List<string>();
+
+                foreach (var x in clientes)
+                {
+                    try
+                    {
+                        await LocalDAO.InsertCliente($"insert into cliente(CLIENTE, NOMBRE) values('@cliente', '@nombre'); ", new { 
+                            cliente= x.cliente,
+                            nombre = x.nombre
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        continue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
+        /*
+         * public async Task Checking()
+        {
+            try
+            {
+                var db = LocalDAO.GetConnection();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        */
     }
 }

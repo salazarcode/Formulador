@@ -14,13 +14,13 @@ using Formulador.Transversal;
 
 namespace Formulador.Data.Repositorios
 {
-    public class TiposProductoRepository : BaseReporitory
+    public class TiposProductoRepository : ServiceContainer
     {
         public async Task<List<TiposProducto>> All()
         {
             string query = $@"SELECT * FROM MONTANAINTERNOS.FORMULACION.TIPOPRODUCTO WHERE ESACTIVO = 1";
 
-            List<TiposProducto> tiposProducto = await DAO.QueryToList<TiposProducto>(query);
+            List<TiposProducto> tiposProducto = await LocalDAO.QueryToList<TiposProducto>(query);
             return tiposProducto;
         }
     }
