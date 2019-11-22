@@ -51,7 +51,7 @@ namespace Formulador.Data.DataAccess
                 using var command = new SQLiteCommand(query, conn);
                 await conn.OpenAsync();
                 using var reader = command.ExecuteReader();
-                res = reader.ToList<T>();
+                res = reader.ToCustomList<T>();
             }
             catch (Exception ex)
             {
@@ -76,28 +76,19 @@ namespace Formulador.Data.DataAccess
                 throw ex;
             }
         }
-        public async Task<int> InsertCliente(string query, dynamic parameters)
+        public async Task<int> QueryWithParam(string query, IDictionary<string, dynamic> parameters)
         {
             try
             {
-                /*
-                
-                using var command = new SQLiteCommand(query, conn);
-                await conn.OpenAsync();
-                */
                 using var conn = GetConnection();
                 using var command = new SQLiteCommand(query, conn);
 
-                command.Parameters.Add(new SQLiteParameter
-                {
-                    ParameterName = "@cliente",
-                    Value = parameters.cliente
-                });
-
-                command.Parameters.Add(new SQLiteParameter
-                {
-                    ParameterName = "@nombre",
-                    Value = parameters.nombre
+                parameters.ToList().ForEach(x => {
+                    command.Parameters.Add(new SQLiteParameter
+                    {
+                        ParameterName = x.Key,
+                        Value = x.Value
+                    });
                 });
 
                 conn.Open();

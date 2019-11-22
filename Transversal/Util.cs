@@ -10,7 +10,7 @@ namespace Formulador.Transversal
 {
     public static class Util
     {
-        public static List<T> ToList<T>(this IDataReader dataReader) where T : new()
+        public static List<T> ToCustomList<T>(this IDataReader dataReader) where T : new()
         {
             DataTable dt = new DataTable();
             List<T> lista = new List<T>();
@@ -27,32 +27,38 @@ namespace Formulador.Transversal
 
             foreach (DataRow dr in dt.Rows)
             {
-                T obj = Util.ToObject<T>(dr);
+                T obj = Util.ToCustomObject<T>(dr);
                 lista.Add(obj);
             }
             return lista;
         }
-        public static T ToObject<T>(this DataRow dataRow) where T : new()
+        public static T ToCustomObject<T>(this DataRow dataRow) where T : new()
         {
             T item = new T();
 
             foreach (DataColumn column in dataRow.Table.Columns)
             {
-                PropertyInfo property = GetProperty(typeof(T), column.ColumnName);
-
-                if (property != null && dataRow[column] != DBNull.Value && dataRow[column].ToString() != "NULL")
+                try
                 {
-                    try
+                    PropertyInfo property = GetProperty(typeof(T), column.ColumnName);
+
+                    if (property != null && dataRow[column] != DBNull.Value && dataRow[column].ToString() != "NULL")
                     {
-                        property.SetValue(item, ChangeType(dataRow[column], property.PropertyType), null);
+                        try
+                        {
+                            property.SetValue(item, ChangeType(dataRow[column], property.PropertyType), null);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        throw ex;
-                    }                    
+                }
+                catch (Exception ex)
+                {
+                    continue;
                 }
             }
-
             return item;
         }
 

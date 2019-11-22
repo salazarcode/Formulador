@@ -41,7 +41,7 @@ namespace Formulador.Dominio
         public float DosisBolsa { get; set; }
         public float Costo { get; set; }
         public float CantAlimento { get; set; }
-        public string OnservacionesProd { get; set; }
+        public string ObservacionesProd { get; set; }
         public bool BloqueadoEdicion { get; set; }
         public DateTime FechaBloqueo { get; set; }
         public string UsuarioBloqueo { get; set; }
@@ -53,7 +53,6 @@ namespace Formulador.Dominio
         public DateTime FechaRegistro { get; set; }
         public string UsuarioActualizacion { get; set; }
         public DateTime FechaActualizacion { get; set; }
-        public bool IsRegExpirationPeriod { get; set; }
         public async Task<List<Detalle>> Detalles()
         {
             var res = await _DetalleRepository.GetByFormula(this.IdFormula);

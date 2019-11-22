@@ -20,13 +20,13 @@ namespace Formulador.Dominio
         public float Costo { get; set; }
         public float Porcentaje { get; set; }
         public float Concentracion { get; set; }
-        public string UnidMedida { get; set; }
+        public string UnidMed { get; set; }
         public bool RequiereDosis { get; set; }
         public bool IncluirEnSumTotCant { get; set; }
         public bool EsDobleFuente { get; set; }
         public int IdDobleFuente { get; set; }
         public string CodDobleFuente { get; set; }
         public bool EsDelete { get; set; }
-        public bool EsRegistEnGranelYEmapaq { get; set; }
+        public bool EsRegistEnGranelYEmpaq { get; set; }
     }
 }

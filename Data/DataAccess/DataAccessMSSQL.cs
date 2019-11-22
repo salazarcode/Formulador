@@ -52,7 +52,7 @@ namespace Formulador.Data.DataAccess
                 var command = new SqlCommand(query, conn);
                 await conn.OpenAsync();
                 var reader = await command.ExecuteReaderAsync();
-                res = reader.ToList<T>();
+                res = reader.ToCustomList<T>();
             }
             catch (Exception ex)
             {

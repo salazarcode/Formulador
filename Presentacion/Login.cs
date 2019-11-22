@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -24,9 +25,8 @@ namespace Formulador
 
         private async void Login_Load(object sender, EventArgs e)
         {
-            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
             var res = await Importador.Import(@"MONTANA\pshiomura");
-
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -35,3 +35,5 @@ namespace Formulador
         }
     }
 }
+
+
