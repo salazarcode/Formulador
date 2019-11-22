@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Formulador.Dominio;
 using Formulador.Data.DataAccess;
 using Formulador.Transversal;
+using Formulador.Transversal.DTO;
 using System.Reflection;
 using System.Linq;
 
@@ -181,18 +182,62 @@ namespace Formulador.Data.Repositorios
             }
         }
 
-        public async Task PullChanges(string TableName)
+        public async Task<List<Articulo>> PullChanges_Articulos()
         {
             try
             {
+                List<Articulo> articulos = await LocalDAO.QueryToList<Articulo>("select Articulo, FCH_HORA_ULT_MODIF from Articulo");
+                List<Insumo> insumo = articulos.Select(x => new Insumo
+                {
+                    id = x.ARTICULO,
+                    UltimaModificacion = x.FCH_HORA_ULT_MODIF.ToString("o").Substring(0,23)
+                }).ToList();
 
+                List<Articulo> actualizados = new List<Articulo>();
+
+                var insumosPaginados = insumo.PaginateList(500);
+
+                insumosPaginados.ForEach(async lista => {
+                    string query = "FORMULACION.usp_Articulos_Diferencias";
+
+                    //PREGUNTO A LA BBDD SI ESTOS REGISTROS CAMBIARON Y OBTENGO SOLO LOS QUE CAMBIARON
+
+                    var concatenados = ConcatInsumo(lista);
+                    var parametros = new Dictionary<string, dynamic>();
+                    parametros.Add($"@insumo", concatenados + ";");
+
+                    List<Articulo> res = RemoteDAO.QueryToList<Articulo>(query, parametros, true);
+
+                    //SI HUBO RESULTADOS ELIMINO LOS LOCALES CON ESOS IDS
+                    if (res.Count != 0)
+                    {
+                        res.ForEach(x => actualizados.Add(x));
+                        //ELIMINO EN LOCAL
+                        var parametrosDelete = new Dictionary<string, dynamic>();
+                        parametrosDelete.Add("@articulos", String.Join(",", res.Select(z => z.ARTICULO).ToList()));
+                        await LocalDAO.QueryWithParam("delete from Articulo where articulo in(@articulos)", parametrosDelete);
+
+                        //GUARDO LA VERSIÓN MÁS RECIENTE QUE ESTABA EN LA BASE DE DATOS.
+                        await Guardar(res);
+                    }
+                });
+
+                return actualizados;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+
         }
 
+
+        public static string ConcatInsumo(List<Insumo> lista)
+        {
+            var concatenado = lista.Select(x => $"{x.id},{x.UltimaModificacion.ToString()}").ToList();
+
+            return String.Join(";", concatenado);
+        }
 
 
     }

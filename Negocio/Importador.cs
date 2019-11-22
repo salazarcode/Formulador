@@ -32,9 +32,8 @@ namespace Formulador.Negocio
                     clientes = clientes
                 };
                 */
-                List<Articulo> articulos = await _importRepository.Articulos();
-                await _importRepository.Guardar(articulos);
-                return articulos;
+                var res = await _importRepository.PullChanges_Articulos();
+                return res;
             }
             catch (Exception ex)
             {

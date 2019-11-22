@@ -90,5 +90,26 @@ namespace Formulador.Transversal
 
             return Convert.ChangeType(value, type);
         }
+        
+        public static List<List<T>> PaginateList<T>(this List<T> lista, int PageSize)
+        {
+            List<List<T>> paginas = new List<List<T>>();
+
+            List<T> pagina = new List<T>();
+
+            int n = 0;
+            foreach (var item in lista)
+            {
+                pagina.Add(item);
+                if (pagina.Count == PageSize ||  n == lista.Count - 1)
+                {
+                    paginas.Add(pagina);
+                    pagina = new List<T>();
+                }
+                n++;
+            }
+
+            return paginas;
+        }
     }
 }

@@ -50,7 +50,7 @@ namespace Formulador.Data.DataAccess
                 using var conn = GetConnection();
                 using var command = new SQLiteCommand(query, conn);
                 await conn.OpenAsync();
-                using var reader = command.ExecuteReader();
+                using var reader = await command.ExecuteReaderAsync();
                 res = reader.ToCustomList<T>();
             }
             catch (Exception ex)

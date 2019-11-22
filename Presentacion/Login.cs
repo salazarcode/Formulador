@@ -26,12 +26,31 @@ namespace Formulador
         private async void Login_Load(object sender, EventArgs e)
         {
             //string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            var res = await Importador.Import(@"MONTANA\pshiomura");
+            //var res = await Importador.Import(@"MONTANA\pshiomura");
+            /*
+            List<string> nombres = new List<string>() { 
+                "Andres",
+                "Sergio",
+                "Santiago",
+                "Daniel",
+                "Omar"
+            };
+
+            var res = nombres.PaginateList(2);
+            */
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private async void btnSincronizar_Click(object sender, EventArgs e)
+        {
+            btnSincronizar.Text = "Sincronizando...";
+            List<Articulo> res = await Importador.Import(@"MONTANA\pshiomura");
+            MessageBox.Show($@"Se actualizaron los artículos: {String.Join(", ", res.Select(x=>x.ARTICULO).ToList())}");
+            btnSincronizar.Text = "Sincronizar";
         }
     }
 }
